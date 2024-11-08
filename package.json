@@ -1,5 +1,6 @@
 {
   "name": "my-chat-app",
+  "homepage": "https://mizuki1024.github.io/mensetu/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
