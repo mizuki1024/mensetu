@@ -1,6 +1,5 @@
 {
   "name": "my-chat-app",
-  "homepage": "https://mizuki1024.github.io/mensetu/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -14,6 +13,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
+    "uuid": "^11.0.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {

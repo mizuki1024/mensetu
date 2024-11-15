@@ -108,4 +108,33 @@ button:hover {
     margin-top: 10px;
     word-wrap: break-word;
   }
-  
+
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.user-info span {
+  font-weight: 500;
+  color: #495057;
+}
+
+.logout-button {
+  padding: 5px 15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}

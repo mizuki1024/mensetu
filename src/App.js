@@ -1,68 +1,42 @@
+// App.js
 import React, { useState, useEffect } from "react";
-import "./styles.css";
+import "./App.css";
 import QuestionForm from "./components/QuestionForm";
 import QuestionList from "./components/QuestionList";
 import PracticeMode from "./components/PracticeMode";
-import { loadQuestions, saveQuestions } from "./utils/storage";
-import FileUpload from './components/FileUpload';
+import FileUpload from "./components/FileUpload";
 
 function App() {
-  const [questions, setQuestions] = useState(loadQuestions);
+  const [questions, setQuestions] = useState([]);
   const [isPracticeMode, setIsPracticeMode] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
 
+  // LocalStorageから質問を読み込む
   useEffect(() => {
-    saveQuestions(questions);
+    const savedQuestions = localStorage.getItem('questions');
+    if (savedQuestions) {
+      setQuestions(JSON.parse(savedQuestions));
+    }
+  }, []);
+
+  // 質問が変更されたときにLocalStorageに保存
+  useEffect(() => {
+    localStorage.setItem('questions', JSON.stringify(questions));
   }, [questions]);
 
-  const addQuestion = (question, answer) => {
-    setQuestions([...questions, { id: Date.now(), question, answer }]);
-  };
-
-  const loadQuestionsFromFile = (qaList) => {
-    const newQuestions = qaList.map((item) => ({
-      id: Date.now(),
-      question: item.question,
-      answer: item.answer,
-    }));
-    setQuestions((prevQuestions) => [...prevQuestions, ...newQuestions]);
+  const addQuestion = (newQuestion) => {
+    const questionWithId = {
+      ...newQuestion,
+      id: Date.now().toString()
+    };
+    setQuestions([...questions, questionWithId]);
   };
 
   const deleteQuestion = (id) => {
-    setQuestions(questions.filter((q) => q.id !== id));
+    setQuestions(questions.filter(q => q.id !== id));
   };
 
-  const startPractice = () => {
-    setIsPracticeMode(true);
-    setCurrentQuestionIndex(0);
-  };
-
-  const endPractice = () => {
-    setIsPracticeMode(false);
-    setCurrentQuestionIndex(0);
-    setSelectedQuestions([]);
-  };
-
-  const handlePracticeNext = () => {
-    if (currentQuestionIndex < selectedQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      endPractice(); // 最後の質問で練習モードを終了
-    }
-  };
-
-  const handleStartPractice = (startingQuestion) => {
-    const startIndex = questions.findIndex(q => q.id === startingQuestion.id);
-    if (startIndex !== -1) {
-      setSelectedQuestions(questions.slice(startIndex));
-      setIsPracticeMode(true);
-      setCurrentQuestionIndex(0);
-    }
-  };
-
-  const onMoveUp = (id) => {
-    const index = questions.findIndex((question) => question.id === id);
+  const onMoveUp = (index) => {
     if (index > 0) {
       const newQuestions = [...questions];
       [newQuestions[index], newQuestions[index - 1]] = [newQuestions[index - 1], newQuestions[index]];
@@ -70,8 +44,7 @@ function App() {
     }
   };
 
-  const onMoveDown = (id) => {
-    const index = questions.findIndex((question) => question.id === id);
+  const onMoveDown = (index) => {
     if (index < questions.length - 1) {
       const newQuestions = [...questions];
       [newQuestions[index], newQuestions[index + 1]] = [newQuestions[index + 1], newQuestions[index]];
@@ -79,31 +52,61 @@ function App() {
     }
   };
 
+  const startPractice = (index) => {
+    setCurrentQuestionIndex(index);
+    setIsPracticeMode(true);
+  };
+
+  const handlePracticeNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      endPractice();
+    }
+  };
+
+  const endPractice = () => {
+    setIsPracticeMode(false);
+    setCurrentQuestionIndex(0);
+  };
+
+  const handleLoadQuestions = (newQuestions) => {
+    const questionsWithIds = newQuestions.map(q => ({
+      ...q,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+    }));
+    setQuestions([...questions, ...questionsWithIds]);
+  };
+
   return (
     <div className="App">
-      <h1>質問と回答管理アプリ</h1>
-      {!isPracticeMode && <FileUpload onLoadQuestions={loadQuestionsFromFile} />} {/* 練習モードでないときのみ表示 */}
+      <h1>面接質問管理アプリ</h1>
       {isPracticeMode ? (
         <PracticeMode
-          questions={selectedQuestions}
+          questions={questions}
           currentQuestionIndex={currentQuestionIndex}
           onNext={handlePracticeNext}
-          onEnd={endPractice} // 終了ボタン用の関数を渡す
+          onEndPractice={endPractice}
         />
       ) : (
-        <>
+        <div className="main-content">
           <QuestionForm onAddQuestion={addQuestion} />
+          <FileUpload onLoadQuestions={handleLoadQuestions} />
           <QuestionList 
             questions={questions} 
             onDeleteQuestion={deleteQuestion} 
             onMoveUp={onMoveUp} 
             onMoveDown={onMoveDown} 
-            onStartPractice={handleStartPractice}
+            onStartPractice={(index) => startPractice(index)}
           />
-          <button onClick={startPractice} disabled={questions.length === 0}>
+          <button 
+            className="practice-button"
+            onClick={() => startPractice(0)} 
+            disabled={questions.length === 0}
+          >
             練習モード開始
           </button>
-        </>
+        </div>
       )}
     </div>
   );

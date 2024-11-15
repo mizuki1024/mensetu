@@ -1,3 +1,4 @@
+// QuestionList.js
 import React, { useState } from "react";
 import "./QuestionList.css";
 
@@ -15,7 +16,7 @@ function QuestionList({ questions, onDeleteQuestion, onMoveUp, onMoveDown, onSta
     <div>
       <h2>質問リスト</h2>
       <ul className="question-list">
-        {questions.map((question) => (
+        {questions.map((question, index) => (
           <li key={question.id} className="question-item">
             <div className="question-text">
               <strong>Q:</strong> {question.question}
@@ -32,7 +33,7 @@ function QuestionList({ questions, onDeleteQuestion, onMoveUp, onMoveDown, onSta
               <button onClick={() => onDeleteQuestion(question.id)} className="delete-button">削除</button>
               <button onClick={() => onMoveUp(question.id)} className="move-button">↑</button>
               <button onClick={() => onMoveDown(question.id)} className="move-button">↓</button>
-              <button onClick={() => onStartPractice(question)} className="start-button">始める</button>
+              <button onClick={() => onStartPractice(index)} className="start-button">始める</button> {/* インデックスを渡す */}
             </div>
           </li>
         ))}

@@ -1,7 +1,8 @@
+// PracticeMode.js
 import React, { useEffect, useState, useRef } from "react";
 import "./PracticeMode.css";
 
-function PracticeMode({ questions, currentQuestionIndex, onNext, onEnd }) {
+function PracticeMode({ questions, currentQuestionIndex, onNext, onEndPractice }) {
   const [displayedItems, setDisplayedItems] = useState([]);
   const [displayText, setDisplayText] = useState("");
   const [isAnswerDisplayed, setIsAnswerDisplayed] = useState(false);
@@ -57,7 +58,7 @@ function PracticeMode({ questions, currentQuestionIndex, onNext, onEnd }) {
     if (practiceContainerRef.current) {
       practiceContainerRef.current.scrollTop = practiceContainerRef.current.scrollHeight;
     }
-  }, [displayedItems, displayText]);
+  }, [displayedItems]);
 
   return (
     <div className="practice-mode-container" ref={practiceContainerRef}>
@@ -69,8 +70,8 @@ function PracticeMode({ questions, currentQuestionIndex, onNext, onEnd }) {
       <div className="practice-item">
         <p><strong>{isAnswerDisplayed ? "A" : "Q"}:</strong> {displayText}</p>
       </div>
+      <button onClick={onEndPractice} className="end-button">終了</button>
       <p className="instruction">Enterキーを押して{isAnswerDisplayed ? "次の質問へ" : "回答を表示"}</p>
-      <button onClick={onEnd} className="end-button">終了</button>
     </div>
   );
 }
